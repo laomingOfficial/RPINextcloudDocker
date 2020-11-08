@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    image: jsurf/rpi-mariadb
+    container_name: nextcloud-mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=更換密碼B
+    env_file:
+      - db.env
+
+  app:
+    image: arm32v7/nextcloud
+    container_name: nextcloud-app
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    ports:
+      - 1234:80 #可以更換1234去其他端口
+    environment:
+      - MYSQL_HOST=db
+    env_file:
+      - db.env
+    depends_on:
+      - db
+
+volumes:
+  db:
+  nextcloud:
